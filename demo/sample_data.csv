@@ -1,0 +1,26 @@
+project_id,project_name,partner,location,budget_usd,disbursed_usd,spent_usd,category,disbursement_date,status
+NBS-001,Mangrove Restoration Kalimantan,Yayasan Lestari Hutan,Kalimantan Timur,150000,120000,95000,Restoration,2025-01-15,Active
+NBS-002,Peatland Rewetting Riau,Komunitas Gambut Sehat,Riau,200000,180000,170000,Rewetting,2025-02-01,Active
+NBS-003,Agroforestry Sulawesi,Koperasi Tani Mandiri,Sulawesi Selatan,85000,60000,45000,Agroforestry,2025-03-10,Active
+NBS-004,Coral Reef Protection Bali,Yayasan Terumbu Karang,Bali,120000,100000,88000,Marine,2025-01-20,Active
+NBS-005,Watershed Management Java,Lembaga Daerah Aliran Sungai,Jawa Barat,95000,70000,62000,Watershed,2025-04-05,Active
+NBS-006,Bamboo Plantation Papua,Yayasan Papua Hijau,Papua Barat,175000,140000,110000,Plantation,2025-02-15,Active
+NBS-007,Urban Greening Jakarta,Komunitas Jakarta Hijau,DKI Jakarta,65000,50000,48000,Urban,2025-05-01,Active
+NBS-008,Seagrass Restoration NTT,Yayasan Laut Biru,Nusa Tenggara Timur,110000,80000,55000,Marine,2025-03-20,Active
+NBS-009,Community Forest Sumatra,Koperasi Hutan Rakyat,Sumatera Barat,130000,110000,100000,Forestry,2025-01-10,Active
+NBS-010,Mangrove Nursery Aceh,Yayasan Pantai Lestari,Aceh,90000,75000,60000,Restoration,2025-06-01,Active
+NBS-011,Peat Fire Prevention Jambi,Komunitas Anti Kebakaran,Jambi,160000,130000,115000,Rewetting,2025-02-28,Active
+NBS-012,Reforestation Flores,Lembaga Hijau Flores,Nusa Tenggara Timur,105000,85000,70000,Forestry,2025-04-15,Active
+NBS-013,Coastal Resilience Makassar,Yayasan Pesisir Tangguh,Sulawesi Selatan,140000,100000,82000,Marine,2025-03-01,Active
+NBS-014,Agroforestry Lampung,Koperasi Kopi Lestari,Lampung,78000,60000,52000,Agroforestry,2025-05-10,Active
+NBS-015,Wetland Conservation Borneo,Yayasan Rawa Borneo,Kalimantan Selatan,185000,150000,130000,Rewetting,2025-01-25,Active
+NBS-016,Seed Bank Bandung,Komunitas Benih Nusantara,Jawa Barat,55000,45000,40000,Restoration,2025-06-15,Active
+NBS-017,Mangrove Carbon Credit,Yayasan Karbon Biru,Kalimantan Utara,220000,180000,145000,Restoration,2025-02-10,Active
+NBS-018,Highland Restoration Toraja,Lembaga Adat Toraja,Sulawesi Selatan,98000,70000,55000,Forestry,2025-04-20,Active
+NBS-019,River Cleanup Citarum,Komunitas Citarum Bersih,Jawa Barat,72000,55000,48000,Watershed,2025-03-15,Active
+NBS-020,Permaculture Yogyakarta,Koperasi Permaculture DIY,DI Yogyakarta,68000,50000,42000,Agroforestry,2025-05-20,Active
+NBS-021,Marine Protected Area Raja Ampat,Yayasan Raja Ampat Lestari,Papua Barat,250000,200000,165000,Marine,2025-01-05,Active
+NBS-022,Teak Plantation Madura,Koperasi Jati Madura,Jawa Timur,88000,65000,55000,Plantation,2025-06-01,Active
+NBS-023,Peatland Monitoring System,Komunitas Teknologi Gambut,Riau,145000,120000,105000,Rewetting,2025-02-20,Active
+NBS-024,Biodiversity Corridor Sumatra,Yayasan Koridor Hijau,Sumatera Utara,195000,160000,135000,Forestry,2025-03-25,Active
+NBS-025,Urban Wetland Surabaya,Lembaga Lingkungan Surabaya,Jawa Timur,82000,60000,50000,Urban,2025-04-10,Active
