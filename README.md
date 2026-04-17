@@ -66,6 +66,67 @@ print(report[["project_id", "flag", "category_flag"]])
 
 ---
 
+## New: Carbon Project Cashflow NPV/IRR Calculator
+
+`src/carbon_cashflow_npv.py` evaluates nature-based carbon projects on a
+discounted-cashflow basis: NPV, IRR, discounted payback period, and the
+break-even carbon credit price required to reach NPV = 0. Use it for
+investment screening across a portfolio of credit-generating NbS projects.
+
+### Quick Start
+
+```bash
+pip install -r requirements.txt
+pytest tests/ -q
+```
+
+### Step-by-step usage
+
+```python
+import pandas as pd
+from src.carbon_cashflow_npv import (
+    evaluate_project,
+    evaluate_portfolio,
+    npv,
+    irr,
+)
+
+# 1. Evaluate a single project (CAPEX in year 0, then annual revenue - OPEX).
+metrics = evaluate_project(
+    project_id="NBS-C01",
+    capex_usd=500_000,
+    opex_annual_usd=50_000,
+    expected_credits_per_year=20_000,
+    price_per_credit_usd=12.0,
+    duration_years=10,
+    discount_rate=0.08,  # 8 % cost of capital
+)
+print(metrics)
+# CashflowMetrics(project_id='NBS-C01', npv_usd=..., irr=...,
+#                 discounted_payback_years=4, breakeven_price_usd=...)
+
+# 2. Evaluate an entire portfolio from CSV.
+df = pd.read_csv("sample_data/sample_data.csv")
+report = evaluate_portfolio(df, discount_rate=0.08)
+print(report.head())
+# Sorted by descending NPV — top picks first.
+
+# 3. Low-level primitives are exposed too.
+cashflows = [-1_000, 600, 600]
+print(npv(cashflows, discount_rate=0.10))   # 41.32
+print(irr(cashflows))                       # ≈ 0.1307
+```
+
+**Edge cases handled with clear errors:**
+- Empty portfolio → `ValueError("Cannot evaluate an empty portfolio")`
+- Missing required columns → `ValueError` listing the missing names
+- `discount_rate <= -1` or NaN → `ValueError`
+- Zero discount rate → NPV equals the simple cashflow sum (no division-by-zero)
+- Negative or all-negative cashflows → IRR returns `None` (no sign change)
+- Project never recovers CAPEX → `discounted_payback_years` is `None`
+
+---
+
 ## Sample Output
 
 The app loads with 25 rows of realistic Indonesian NbS project data covering:
