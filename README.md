@@ -1,106 +1,60 @@
 # NbS Financial Tracker
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue?logo=python&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Last Commit](https://img.shields.io/github/last-commit/achmadnaufal/nbs-financial-tracker)
-![Streamlit](https://img.shields.io/badge/streamlit-1.30%2B-FF4B4B?logo=streamlit&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-110%20passing-brightgreen)
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg) ![Last Commit](https://img.shields.io/github/last-commit/achmadnaufal/nbs-financial-tracker)
 
-> Streamlit dashboard + Python toolkit for tracking Nature-based Solutions (NbS) project finances — budget allocation, disbursement timeline, partner payments, burn rate, variance analysis, and discounted cashflow valuation. Built around PUR's Indonesian portfolio workflow.
+A Streamlit dashboard and Python toolkit for tracking Nature-based Solutions (NbS) project finances across an Indonesian carbon-credit portfolio. It turns a flat CSV of project budgets, disbursements, and spend into portfolio KPIs, partner payment schedules, variance flags, and NPV/IRR valuations — so program managers can spot over-budget work, slow disbursements, and under-performing carbon cashflows without leaving the browser.
 
----
+## Features
 
-## ✨ Features
+- Portfolio KPIs: total budget, disbursed, spent, remaining, overall burn rate, disbursement rate, project count
+- Budget vs actuals per project with `utilization_pct` and a > 90% burn-rate watchlist
+- Partner payments: per-partner budget / disbursed / spent / pending disbursement, sorted by total budget
+- Category summary: per-category totals and utilisation (Agroforestry, Forestry, Marine, Plantation, Restoration, Rewetting, Urban, Watershed)
+- Monthly burn rate by category with cumulative disbursement timeline
+- Budget Variance Analyzer with `OVER_BUDGET` / `UNDER_BUDGET` / `ON_TRACK` flags at project and category level (configurable tolerance)
+- Carbon Cashflow NPV/IRR: NPV, IRR, discounted payback, break-even credit price per project + portfolio
+- Multi-select filters on category, partner, and location
+- Multi-sheet Excel export (KPIs, projects, partners, categories)
+- CSV upload with schema validation, or bundled 25-project Indonesian sample
 
-| Feature | Description |
-|---|---|
-| **Portfolio KPIs** | Total budget / disbursed / spent / remaining + burn-rate, disbursement-rate |
-| **Budget vs Actuals** | Per-project utilisation % with watchlist for >90% projects |
-| **Burn Rate** | Monthly spending trend by category, gauge chart for utilisation |
-| **Partner Payments** | Per-partner disbursed vs pending, sorted by total budget |
-| **Disbursement Timeline** | Cumulative disbursement area chart with category breakdown |
-| **Budget Variance Analyzer** | Per-project + per-category variance with `OVER_BUDGET` / `UNDER_BUDGET` / `ON_TRACK` flags |
-| **Carbon Cashflow NPV/IRR** | Project-level NPV, IRR, discounted payback, break-even credit price |
-| **Filters** | Multi-select on category, partner, location |
-| **Excel Export** | Multi-sheet workbook (KPIs, projects, partners, categories) |
-| **CSV Upload** | Bring your own data or use the bundled sample |
+## Architecture
 
----
+```mermaid
+flowchart LR
+    A[CSV upload<br/>or bundled sample] --> B[data_loader<br/>load_csv + schema validation]
+    B --> C[filter_dataframe<br/>category / partner / location]
+    C --> D1[calculations<br/>KPIs, burn rate, partners, timeline]
+    C --> D2[budget_variance_analyzer<br/>OVER / UNDER / ON_TRACK flags]
+    C --> D3[carbon_cashflow_npv<br/>NPV / IRR / payback / break-even]
+    D1 --> E[charts<br/>Plotly figures]
+    D2 --> E
+    D3 --> E
+    D1 --> F[export<br/>multi-sheet xlsx]
+    D2 --> F
+    D3 --> F
+    E --> G[Streamlit UI]
+    F --> H[Excel download]
+```
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
-git clone https://github.com/achmadnaufal/nbs-financial-tracker.git
-cd nbs-financial-tracker
+git clone https://github.com/achmadnaufal/nbs-financial-tracker.git && cd nbs-financial-tracker
 pip install -r requirements.txt
+streamlit run app.py   # or: python3 -m demo.run_demo
+```
 
-# Streamlit app
-streamlit run app.py
-# → http://localhost:8501
+## Usage
 
-# Or CLI demo
+### CLI demo
+
+```bash
 python3 -m demo.run_demo
 ```
 
----
+Actual captured output against the bundled 25-project portfolio:
 
-## 🧪 Usage
-
-### Portfolio KPIs
-
-```python
-from src.data_loader import get_sample_data_path, load_csv, filter_dataframe
-from src.calculations import compute_kpi_metrics, compute_partner_payments
-
-df = load_csv(get_sample_data_path())
-df = filter_dataframe(df, categories=["Restoration", "Rewetting"])
-
-kpi = compute_kpi_metrics(df)
-print(f"Burn rate: {kpi['overall_burn_rate']}%  |  Disbursed: {kpi['disbursement_rate']}%")
-print(compute_partner_payments(df).head())
 ```
-
-### Budget Variance Analyzer
-
-```python
-import pandas as pd
-from src.budget_variance_analyzer import (
-    compute_project_variance,
-    compute_category_variance,
-    build_variance_report,
-)
-
-df = pd.read_csv("demo/sample_data.csv")
-project_var = compute_project_variance(df, tolerance_pct=10.0)
-cat_summaries = compute_category_variance(df, tolerance_pct=10.0)
-report = build_variance_report(df, tolerance_pct=10.0)
-```
-
-Flags: `OVER_BUDGET` (variance > +tol%), `UNDER_BUDGET` (< −tol%), `ON_TRACK` (within band). Default tolerance 10%.
-
-### Carbon Cashflow NPV/IRR
-
-```python
-from src.carbon_cashflow_npv import evaluate_project, evaluate_portfolio, npv, irr
-
-metrics = evaluate_project(
-    project_id="NBS-C01",
-    capex_usd=500_000,
-    opex_annual_usd=50_000,
-    expected_credits_per_year=20_000,
-    price_per_credit_usd=12.0,
-    duration_years=10,
-    discount_rate=0.08,
-)
-
-import pandas as pd
-report = evaluate_portfolio(pd.read_csv("sample_data/sample_data.csv"), discount_rate=0.08)
-```
-
-### Demo output
-
-```text
-$ python3 -m demo.run_demo
 ======================================================================
 NbS Financial Tracker — portfolio demo
 ======================================================================
@@ -124,44 +78,84 @@ Agroforestry        231000       139000           170000              3         
    Watershed        167000       110000           125000              2               66
 
 Top 5 partners by budget:
-                   partner  total_budget  total_disbursed  total_spent  ...
-Yayasan Raja Ampat Lestari        250000           200000       165000  ...
-       Yayasan Karbon Biru        220000           180000       145000  ...
-    Komunitas Gambut Sehat        200000           180000       170000  ...
-     Yayasan Koridor Hijau        195000           160000       135000  ...
-       Yayasan Rawa Borneo        185000           150000       130000  ...
+                   partner  total_budget  total_disbursed  total_spent  project_count  pending_disbursement
+Yayasan Raja Ampat Lestari        250000           200000       165000              1                 50000
+       Yayasan Karbon Biru        220000           180000       145000              1                 40000
+    Komunitas Gambut Sehat        200000           180000       170000              1                 20000
+     Yayasan Koridor Hijau        195000           160000       135000              1                 35000
+       Yayasan Rawa Borneo        185000           150000       130000              1                 35000
+
+Projects with utilisation > 90% (burn-rate watchlist):
+  (none)
+
+Run `streamlit run app.py` for the interactive dashboard.
 ```
 
----
+### Python API — portfolio KPIs
 
-## 🏗 Architecture
+```python
+from src.data_loader import get_sample_data_path, load_csv, filter_dataframe
+from src.calculations import compute_kpi_metrics, compute_partner_payments
 
-```mermaid
-flowchart LR
-    A[CSV Upload<br/>or sample_data.csv] --> B[data_loader.load_csv<br/>schema validation]
-    B --> C[data_loader.filter_dataframe<br/>category / partner / location]
-    C --> D1[calculations<br/>KPIs, burn rate, partners]
-    C --> D2[budget_variance_analyzer<br/>OVER / UNDER / ON_TRACK flags]
-    C --> D3[carbon_cashflow_npv<br/>NPV / IRR / payback / break-even]
-    D1 & D2 & D3 --> E[charts.* Plotly figures]
-    D1 & D2 & D3 --> F[export.to_excel<br/>multi-sheet xlsx]
-    E --> G[Streamlit UI]
-    F --> H[Excel download]
+df = load_csv(get_sample_data_path())
+df = filter_dataframe(df, categories=["Restoration", "Rewetting"])
+
+kpi = compute_kpi_metrics(df)
+print(f"Burn rate: {kpi['overall_burn_rate']}%  |  Disbursed: {kpi['disbursement_rate']}%")
+print(compute_partner_payments(df).head())
 ```
 
----
+### Python API — budget variance
 
-## 🛠 Tech Stack
+```python
+import pandas as pd
+from src.budget_variance_analyzer import (
+    compute_project_variance,
+    compute_category_variance,
+    build_variance_report,
+)
 
-- **Streamlit** — dashboard UI
-- **Pandas / NumPy** — data wrangling, NPV/IRR math
-- **Plotly** — interactive charts
-- **openpyxl** — multi-sheet Excel export
-- **pytest** — 110-test suite
+df = pd.read_csv("demo/sample_data.csv")
+project_var = compute_project_variance(df, tolerance_pct=10.0)
+cat_summaries = compute_category_variance(df, tolerance_pct=10.0)
+report = build_variance_report(df, tolerance_pct=10.0)
+```
 
----
+Flags: `OVER_BUDGET` (variance > +tolerance), `UNDER_BUDGET` (< -tolerance), `ON_TRACK` (within band). Default tolerance 10%.
 
-## 📁 Project Structure
+### Python API — carbon NPV / IRR
+
+```python
+import pandas as pd
+from src.carbon_cashflow_npv import evaluate_project, evaluate_portfolio
+
+metrics = evaluate_project(
+    project_id="NBS-C01",
+    capex_usd=500_000,
+    opex_annual_usd=50_000,
+    expected_credits_per_year=20_000,
+    price_per_credit_usd=12.0,
+    duration_years=10,
+    discount_rate=0.08,
+)
+
+report = evaluate_portfolio(
+    pd.read_csv("sample_data/sample_data.csv"),
+    discount_rate=0.08,
+)
+```
+
+## Tech Stack
+
+| Layer         | Tool                        |
+|---------------|-----------------------------|
+| UI            | Streamlit >= 1.30           |
+| Data          | pandas >= 2.1, NumPy        |
+| Charts        | Plotly >= 5.18              |
+| Export        | openpyxl >= 3.1             |
+| Tests         | pytest >= 7.4 (110 tests)   |
+
+## Project Structure
 
 ```
 nbs-financial-tracker/
@@ -169,26 +163,24 @@ nbs-financial-tracker/
 ├── src/
 │   ├── data_loader.py              # CSV loading, validation, filtering
 │   ├── calculations.py             # KPIs, burn rate, partner & timeline math
-│   ├── budget_variance_analyzer.py # OVER/UNDER/ON_TRACK flags
+│   ├── budget_variance_analyzer.py # OVER / UNDER / ON_TRACK flags
 │   ├── carbon_cashflow_npv.py      # NPV / IRR / payback / break-even
 │   ├── charts.py                   # Plotly chart builders
-│   └── export.py                   # Excel/CSV export utilities
+│   └── export.py                   # Excel / CSV export utilities
 ├── demo/
-│   ├── run_demo.py                 # CLI demo
+│   ├── run_demo.py                 # CLI portfolio demo
 │   └── sample_data.csv             # 25 Indonesian NbS projects
-├── sample_data/sample_data.csv     # Carbon-project portfolio sample
+├── sample_data/sample_data.csv     # Carbon-project portfolio (NPV/IRR schema)
+├── sample_data.csv                 # Root-level carbon-project sample (NPV/IRR schema)
 ├── tests/                          # 110 tests (loader, calc, variance, NPV, charts, export)
-├── docs/SCREENSHOTS.md
+├── docs/
 ├── requirements.txt
-└── LICENSE
+├── LICENSE
+└── README.md
 ```
 
----
+## License
 
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE).
-
----
+MIT — see [LICENSE](LICENSE).
 
 > Built by [Achmad Naufal](https://github.com/achmadnaufal) | Lead Data Analyst | Power BI · SQL · Python · GIS
